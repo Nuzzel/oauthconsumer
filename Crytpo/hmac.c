@@ -50,7 +50,7 @@ if (inKeyLength > B)
 	SHA1Init(&theSHA1Context);
 	SHA1Update(&theSHA1Context, inKey, inKeyLength);
 	SHA1Final(inKey, &theSHA1Context);
-	inKeyLength = L;
+	inKeyLength = (unsigned int) L;
 	}
 
 /* start out by storing key in pads */
@@ -81,7 +81,7 @@ SHA1Final((unsigned char *)outDigest, &theSHA1Context);                /* finish
 SHA1Init(&theSHA1Context);                   /* init context for 2nd
 * pass */
 SHA1Update(&theSHA1Context, k_opad, B);     /* start with outer pad */
-SHA1Update(&theSHA1Context, outDigest, L);     /* then results of 1st
+SHA1Update(&theSHA1Context, outDigest, (unsigned int) L);     /* then results of 1st
 * hash */
 SHA1Final(outDigest, &theSHA1Context);          /* finish up 2nd pass */
 
