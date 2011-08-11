@@ -72,12 +72,14 @@
 		   method:(NSString *)aMethod
 	   parameters:(NSArray *)theParameters
 			files:(NSDictionary*)theFiles {
-	url = [aURL retain];
-	method = [aMethod retain];
-	parameters = [theParameters retain];
-	files = [theFiles retain];
-	fetcher = nil;
-	request = nil;
+	if ((self = [super init])) {
+		url = [aURL retain];
+		method = [aMethod retain];
+		parameters = [theParameters retain];
+		files = [theFiles retain];
+		fetcher = nil;
+		request = nil;
+	}
 	
 	return self;
 }
@@ -139,13 +141,13 @@
 	if (self.parameters) {
 		[request setParameters:self.parameters];
 	}
-	
+
 //	if (self.files) {
 //		for (NSString *key in self.files) {
 //			[request attachFileWithName:@"file" filename:NSLocalizedString(@"Photo.jpg", @"") data:[self.files objectForKey:key]];
 //		}
 //	}
-	
+
 	fetcher = [[OADataFetcher alloc] init];
 	[fetcher fetchDataWithRequest:request
 						 delegate:self

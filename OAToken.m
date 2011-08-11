@@ -39,7 +39,7 @@
 
 @implementation OAToken
 
-@synthesize key, secret, session, duration, forRenewal;
+@synthesize key, secret, session, duration, verifier, attributes, forRenewal;
 
 #pragma mark init
 
@@ -55,17 +55,30 @@
 - (id)initWithKey:(NSString *)aKey secret:(NSString *)aSecret session:(NSString *)aSession
 		 duration:(NSNumber *)aDuration attributes:(NSMutableDictionary *)theAttributes created:(NSDate *)creation
 		renewable:(BOOL)renew {
-	[super init];
-	self.key = aKey;
-	self.secret = aSecret;
-	self.session = aSession;
-	self.duration = aDuration;
-	self.attributes = theAttributes;
-	created = [creation retain];
-	renewable = renew;
-	forRenewal = NO;
+	if ((self = [super init])) {
+		self.key = aKey;
+		self.secret = aSecret;
+		self.session = aSession;
+		self.duration = aDuration;
+		self.attributes = theAttributes;
+		created = [creation retain];
+		renewable = renew;
+		forRenewal = NO;
+	}
 
 	return self;
+}
+
+- (id)initWithCoder:(NSCoder *)aDecoder {
+	OAToken *t = [self initWithKey:[aDecoder decodeObjectForKey:@"key"]
+							secret:[aDecoder decodeObjectForKey:@"secret"]
+						   session:[aDecoder decodeObjectForKey:@"session"]
+						  duration:[aDecoder decodeObjectForKey:@"duration"]
+						attributes:[aDecoder decodeObjectForKey:@"attributes"]
+						   created:[aDecoder decodeObjectForKey:@"created"]
+						 renewable:[aDecoder decodeBoolForKey:@"renewable"]];
+	[t setVerifier:[aDecoder decodeObjectForKey:@"verifier"]];
+	return t;
 }
 
 - (id)initWithHTTPResponseBody:(const NSString *)body {
@@ -126,7 +139,9 @@
 - (void)dealloc {
     self.key = nil;
     self.secret = nil;
+	self.session = nil;
     self.duration = nil;
+    self.verifier = nil;
     self.attributes = nil;
 	[super dealloc];
 }
@@ -148,6 +163,16 @@
 	
 	[[NSUserDefaults standardUserDefaults] synchronize];
 	return(0);
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder {
+	[aCoder encodeObject:[self key] forKey:@"key"];
+	[aCoder encodeObject:[self secret] forKey:@"secret"];
+	[aCoder encodeObject:[self session] forKey:@"session"];
+	[aCoder encodeObject:[self duration] forKey:@"duration"];
+	[aCoder encodeObject:[self attributes] forKey:@"attributes"];
+	[aCoder encodeBool:renewable forKey:@"renewable"];
+	[aCoder encodeObject:[self verifier] forKey:@"verifier"];
 }
 
 #pragma mark duration
@@ -183,8 +208,11 @@
 
 - (void)setAttributes:(NSDictionary *)theAttributes {
 	[attributes release];
-	attributes = [theAttributes mutableCopy];
-	
+	if (theAttributes) {
+		attributes = [[NSMutableDictionary alloc] initWithDictionary:theAttributes];
+	}else {
+		attributes = nil;
+	}
 }
 
 - (BOOL)hasAttributes {
@@ -231,6 +259,9 @@
 		if ([attributes count]) {
 			[params setObject:[self attributeString] forKey:@"oauth_token_attributes"];
 		}
+	}
+	if (self.verifier) {
+		[params setObject:self.verifier forKey:@"oauth_verifier"];
 	}
 	return params;
 }
