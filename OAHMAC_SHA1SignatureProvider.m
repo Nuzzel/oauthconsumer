@@ -26,7 +26,7 @@
 
 #import "OAHMAC_SHA1SignatureProvider.h"
 
-// #include "hmac.h"
+#include "hmac.h"
 #include "Base64Transcoder.h"
 
 #import <CommonCrypto/CommonDigest.h>

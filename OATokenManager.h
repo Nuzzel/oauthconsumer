@@ -49,7 +49,7 @@
 				 realm:(const NSString *)aRealm callback:(const NSString *)aCallback
 			  delegate:(NSObject <OATokenManagerDelegate> *)aDelegate;
 
-- (void)authorizedToken:(const NSString *)key;
+- (void)authorizedToken:(NSString *)key;
 
 - (void)fetchData:(NSString *)aURL finished:(SEL)didFinish;
 
