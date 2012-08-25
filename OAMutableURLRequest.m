@@ -85,14 +85,10 @@ signatureProvider:(id<OASignatureProviding>)aProvider {
 signatureProvider:(id<OASignatureProviding>)aProvider
             nonce:(NSString *)aNonce
         timestamp:(NSString *)aTimestamp {
-    self = [self initWithURL:aUrl
-             consumer:aConsumer
-                token:aToken
-                realm:aRealm
-    signatureProvider:aProvider];
-    
-    nonce = [aNonce copy];
-    timestamp = [aTimestamp copy];
+    if ((self = [self initWithURL:aUrl consumer:aConsumer token:aToken realm:aRealm signatureProvider:aProvider])) {
+      nonce = [aNonce copy];
+      timestamp = [aTimestamp copy];
+    }
     
     return self;
 }
@@ -135,12 +131,32 @@ signatureProvider:(id<OASignatureProviding>)aProvider
 - (void)_generateNonce {
     CFUUIDRef theUUID = CFUUIDCreate(NULL);
     CFStringRef string = CFUUIDCreateString(NULL, theUUID);
-    NSMakeCollectable(theUUID);
+    [NSMakeCollectable(theUUID) autorelease];
 	if (nonce) {
 		CFRelease(nonce);
 	}
     nonce = (NSString *)string;
 }
+
+NSInteger normalize(id obj1, id obj2, void *context)
+{
+    NSArray *nameAndValue1 = [obj1 componentsSeparatedByString:@"="];
+    NSArray *nameAndValue2 = [obj2 componentsSeparatedByString:@"="];
+    
+    NSString *name1 = [nameAndValue1 objectAtIndex:0];
+    NSString *name2 = [nameAndValue2 objectAtIndex:0];
+    
+    NSComparisonResult comparisonResult = [name1 compare:name2];
+    if (comparisonResult == NSOrderedSame) {
+        NSString *value1 = [nameAndValue1 objectAtIndex:1];
+        NSString *value2 = [nameAndValue2 objectAtIndex:1];
+        
+        comparisonResult = [value1 compare:value2];
+    }
+    
+    return comparisonResult;
+}
+
 
 - (NSString *)_signatureBaseString {
     // OAuth Spec, Section 9.1.1 "Normalize Request Parameters"
@@ -178,24 +194,8 @@ signatureProvider:(id<OASignatureProviding>)aProvider
 		}
 	}
     
-    // Oauth Spec, Section 3.4.1.3.2 "Parameters Normalization"
-    NSArray *sortedPairs = [parameterPairs sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSArray *nameAndValue1 = [obj1 componentsSeparatedByString:@"="];
-        NSArray *nameAndValue2 = [obj2 componentsSeparatedByString:@"="];
-        
-        NSString *name1 = [nameAndValue1 objectAtIndex:0];
-        NSString *name2 = [nameAndValue2 objectAtIndex:0];
-        
-        NSComparisonResult comparisonResult = [name1 compare:name2];
-        if (comparisonResult == NSOrderedSame) {
-            NSString *value1 = [nameAndValue1 objectAtIndex:1];
-            NSString *value2 = [nameAndValue2 objectAtIndex:1];
-
-            comparisonResult = [value1 compare:value2];
-        }
-        
-        return comparisonResult;
-    }];
+    // Oauth Spec, Section 3.4.1.3.2 "Parameters Normalization    
+    NSArray *sortedPairs = [parameterPairs sortedArrayUsingFunction:normalize context:NULL];
 
     NSString *normalizedRequestParameters = [sortedPairs componentsJoinedByString:@"&"];
     [parameterPairs release];
