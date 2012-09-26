@@ -42,6 +42,7 @@
     id<OASignatureProviding> signatureProvider;
     NSString *nonce;
     NSString *timestamp;
+    NSString *callbackURL;
 }
 @property(readonly) NSString *signature;
 @property(readonly) NSString *nonce;
@@ -50,6 +51,13 @@
 		 consumer:(OAConsumer *)aConsumer
 			token:(OAToken *)aToken
             realm:(NSString *)aRealm
+signatureProvider:(id<OASignatureProviding>)aProvider;
+
+- (id)initWithURL:(NSURL *)aUrl
+		 consumer:(OAConsumer *)aConsumer
+			token:(OAToken *)aToken
+            realm:(NSString *)aRealm
+      callbackURL:(NSString *)aCallbackURL
 signatureProvider:(id<OASignatureProviding>)aProvider;
 
 - (id)initWithURL:(NSURL *)aUrl

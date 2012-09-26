@@ -76,6 +76,20 @@ signatureProvider:(id<OASignatureProviding>)aProvider {
     return self;
 }
 
+// allow setting of custom callback URL
+- (id)initWithURL:(NSURL *)aUrl
+		 consumer:(OAConsumer *)aConsumer
+			token:(OAToken *)aToken
+            realm:(NSString *)aRealm
+      callbackURL:(NSString *)aCallbackURL
+signatureProvider:(id<OASignatureProviding>)aProvider {
+    if ((self = [self initWithURL:aUrl consumer:aConsumer token:aToken realm:aRealm signatureProvider:aProvider])) {
+        callbackURL = [aCallbackURL copy];
+    }
+    
+    return self;
+}
+
 // Setting a timestamp and nonce to known
 // values can be helpful for testing
 - (id)initWithURL:(NSURL *)aUrl
@@ -92,6 +106,8 @@ signatureProvider:(id<OASignatureProviding>)aProvider
     
     return self;
 }
+
+
 
 - (void)prepare {
     // sign
@@ -110,6 +126,11 @@ signatureProvider:(id<OASignatureProviding>)aProvider
 	for (NSString *k in tokenParameters) {
 		[chunks addObject:[NSString stringWithFormat:@"%@=\"%@\"", k, [[tokenParameters objectForKey:k] encodedURLParameterString]]];
 	}
+    
+    // add the custom callback URL for oauth_callback if we one
+    if (callbackURL) {
+        [chunks addObject:[NSString stringWithFormat:@"oauth_callback=\"%@\"", [callbackURL encodedURLParameterString]]];
+    }
 
 	[chunks addObject:[NSString stringWithFormat:@"oauth_signature_method=\"%@\"", [[signatureProvider name] encodedURLParameterString]]];
 	[chunks addObject:[NSString stringWithFormat:@"oauth_signature=\"%@\"", [signature encodedURLParameterString]]];
@@ -183,6 +204,13 @@ NSInteger normalize(id obj1, id obj2, void *context)
 	parameter = [[OARequestParameter alloc] initWithName:@"oauth_version" value:@"1.0"] ;
     [parameterPairs addObject:[parameter URLEncodedNameValuePair]];
 	[parameter release];
+    
+    // add the oauth_callback header parameter if our callbackURL is set   
+    if (callbackURL) {
+        parameter = [[OARequestParameter alloc] initWithName:@"oauth_callback" value:callbackURL];
+        [parameterPairs addObject:[parameter URLEncodedNameValuePair]];
+        [parameter release];
+    }
 	
 	for(NSString *k in tokenParameters) {
 		[parameterPairs addObject:[[OARequestParameter requestParameter:k value:[tokenParameters objectForKey:k]] URLEncodedNameValuePair]];
