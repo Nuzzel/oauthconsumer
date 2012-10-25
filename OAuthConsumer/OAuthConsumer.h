@@ -28,7 +28,7 @@
 #import "OAToken.h"
 #import "OAConsumer.h"
 #import "OAMutableURLRequest.h"
-#import "NSString+URLEncoding.h"
+#import "OANSString+URLEncoding.h"
 #import "NSMutableURLRequest+Parameters.h"
 #import "NSURL+Base.h"
 #import "OASignatureProviding.h"

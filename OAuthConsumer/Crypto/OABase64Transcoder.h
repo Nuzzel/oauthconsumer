@@ -1,5 +1,5 @@
 /*
- *  Base64Transcoder.h
+ *  OABase64Transcoder.h
  *  Base64Test
  *
  *  Created by Jonathan Wight on Tue Mar 18 2003.

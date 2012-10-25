@@ -1,5 +1,5 @@
 /*
- *  Base64Transcoder.c
+ *  OABase64Transcoder.c
  *  Base64Test
  *
  *  Created by Jonathan Wight on Tue Mar 18 2003.
@@ -25,7 +25,7 @@
  *
  */
 
-#include "Base64Transcoder.h"
+#include "OABase64Transcoder.h"
 
 #include <math.h>
 #include <string.h>

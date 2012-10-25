@@ -1,5 +1,5 @@
 //
-//  NSString+URLEncoding.h
+//  OANSString+URLEncoding.h
 //
 //  Created by Jon Crosby on 10/19/07.
 //  Copyright 2007 Kaboomerang LLC. All rights reserved.
