@@ -52,6 +52,11 @@ static NSString *Boundary = @"-----------------------------------0xCoCoaouTHeBou
     NSMutableArray *requestParameters = [NSMutableArray arrayWithCapacity:[encodedParameterPairs count]];
     
     for (NSString *encodedPair in encodedParameterPairs) {
+        if ([encodedPair rangeOfString:@"="].location == NSNotFound) {
+            // this is *REQUIRED* to POST data in HTTPBody to LinkedIn API
+            continue; 
+        }
+        
         NSArray *encodedPairElements = [encodedPair componentsSeparatedByString:@"="];
         OARequestParameter *parameter = [[OARequestParameter alloc] initWithName:[[encodedPairElements objectAtIndex:0] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]
                                                                            value:[[encodedPairElements objectAtIndex:1] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
