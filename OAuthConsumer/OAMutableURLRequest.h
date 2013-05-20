@@ -44,8 +44,8 @@
     NSString *timestamp;
     NSString *callbackURL;
 }
-@property(readonly) NSString *signature;
-@property(readonly) NSString *nonce;
+@property(copy, readonly) NSString *signature;
+@property(copy, readonly) NSString *nonce;
 
 - (id)initWithURL:(NSURL *)aUrl
 		 consumer:(OAConsumer *)aConsumer

@@ -39,7 +39,7 @@
 @property(readonly) NSURLResponse *response;
 @property(readonly) NSData *data;
 @property(readonly) BOOL didSucceed;
-@property(readonly) NSString *body;
+@property(weak, readonly) NSString *body;
 
 - (id)initWithRequest:(OAMutableURLRequest *)aRequest response:(NSURLResponse *)aResponse data:(NSData *)aData didSucceed:(BOOL)success;
 

@@ -47,13 +47,13 @@ signatureProvider:(id<OASignatureProviding>)aProvider {
            cachePolicy:NSURLRequestReloadIgnoringCacheData
 	   timeoutInterval:10.0])) {
     
-		consumer = [aConsumer retain];
+		consumer = aConsumer;
 		
 		// empty token for Unauthorized Request Token transaction
 		if (aToken == nil) {
 			token = [[OAToken alloc] init];
 		} else {
-			token = [aToken retain];
+			token = aToken;
 		}
 		
 		if (aRealm == nil) {
@@ -66,7 +66,7 @@ signatureProvider:(id<OASignatureProviding>)aProvider {
 		if (aProvider == nil) {
 			signatureProvider = [[OAHMAC_SHA1SignatureProvider alloc] init];
 		} else {
-			signatureProvider = [aProvider retain];
+			signatureProvider = aProvider;
 		}
 		
 		[self _generateTimestamp];
@@ -139,24 +139,16 @@ signatureProvider:(id<OASignatureProviding>)aProvider
 	[chunks	addObject:@"oauth_version=\"1.0\""];
 	
 	NSString *oauthHeader = [NSString stringWithFormat:@"OAuth %@", [chunks componentsJoinedByString:@", "]];
-	[chunks release];
 
     [self setValue:oauthHeader forHTTPHeaderField:@"Authorization"];
 }
 
 - (void)_generateTimestamp {
-	[timestamp release];
     timestamp = [[NSString alloc]initWithFormat:@"%ld", time(NULL)];
 }
 
 - (void)_generateNonce {
-    CFUUIDRef theUUID = CFUUIDCreate(NULL);
-    CFStringRef string = CFUUIDCreateString(NULL, theUUID);
-    [NSMakeCollectable(theUUID) autorelease];
-	if (nonce) {
-		CFRelease(nonce);
-	}
-    nonce = (NSString *)string;
+    nonce = [[NSUUID UUID] UUIDString];
 }
 
 static NSInteger normalize(id obj1, id obj2, void *context)
@@ -191,25 +183,19 @@ static NSInteger normalize(id obj1, id obj2, void *context)
 	parameter = [[OARequestParameter alloc] initWithName:@"oauth_consumer_key" value:consumer.key];
 	
     [parameterPairs addObject:[parameter URLEncodedNameValuePair]];
-	[parameter release];
 	parameter = [[OARequestParameter alloc] initWithName:@"oauth_signature_method" value:[signatureProvider name]];
     [parameterPairs addObject:[parameter URLEncodedNameValuePair]];
-	[parameter release];
 	parameter = [[OARequestParameter alloc] initWithName:@"oauth_timestamp" value:timestamp];
     [parameterPairs addObject:[parameter URLEncodedNameValuePair]];
-	[parameter release];
 	parameter = [[OARequestParameter alloc] initWithName:@"oauth_nonce" value:nonce];
     [parameterPairs addObject:[parameter URLEncodedNameValuePair]];
-	[parameter release];
 	parameter = [[OARequestParameter alloc] initWithName:@"oauth_version" value:@"1.0"] ;
     [parameterPairs addObject:[parameter URLEncodedNameValuePair]];
-	[parameter release];
     
     // add the oauth_callback header parameter if our callbackURL is set   
     if (callbackURL) {
         parameter = [[OARequestParameter alloc] initWithName:@"oauth_callback" value:callbackURL];
         [parameterPairs addObject:[parameter URLEncodedNameValuePair]];
-        [parameter release];
     }
 	
 	for(NSString *k in tokenParameters) {
@@ -226,7 +212,6 @@ static NSInteger normalize(id obj1, id obj2, void *context)
     NSArray *sortedPairs = [parameterPairs sortedArrayUsingFunction:normalize context:NULL];
 
     NSString *normalizedRequestParameters = [sortedPairs componentsJoinedByString:@"&"];
-    [parameterPairs release];
 	//	NSLog(@"Normalized: %@", normalizedRequestParameters);
     // OAuth Spec, Section 9.1.2 "Concatenate Request Elements"
     return [NSString stringWithFormat:@"%@&%@&%@",
@@ -235,16 +220,5 @@ static NSInteger normalize(id obj1, id obj2, void *context)
             [normalizedRequestParameters encodedURLString]];
 }
 
-- (void) dealloc
-{
-    [consumer release];
-	[token release];
-	[signatureProvider release];
-	[timestamp release];
-	if (nonce) {
-		CFRelease(nonce);
-	}
-	[super dealloc];
-}
 
 @end

@@ -36,11 +36,11 @@
 	OAServiceTicket *ticket;
 }
 
-@property(readonly) NSURL *url;
-@property(readonly) NSString *method;
-@property(readonly) NSArray *parameters;
-@property(readonly) NSDictionary *files;
-@property(nonatomic, retain) OAServiceTicket *ticket;
+@property(readonly, strong) NSURL *url;
+@property(readonly, copy) NSString *method;
+@property(readonly, copy) NSArray *parameters;
+@property(readonly, copy) NSDictionary *files;
+@property(nonatomic, strong) OAServiceTicket *ticket;
 
 - (id)init;
 - (id)initWithURL:(NSURL *)aURL;

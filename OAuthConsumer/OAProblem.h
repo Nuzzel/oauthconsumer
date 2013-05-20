@@ -25,7 +25,7 @@ enum {
 	NSString *problem;
 }
 
-@property (readonly) NSString *problem;
+@property (copy, readonly) NSString *problem;
 
 - (id)initWithProblem:(NSString *)aProblem;
 - (id)initWithResponseBody:(NSString *)response;
