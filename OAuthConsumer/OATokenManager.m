@@ -242,10 +242,14 @@
 		NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@authorize?oauth_token=%@&oauth_callback=%@",
 										   oauthBase, token.key, callback]];
 		
+#if defined(NZL_APP_EXTENSIONS)
+        // TODO
+#else
 #if TARGET_OS_IPHONE
 		[[UIApplication sharedApplication] openURL:url];
 #else
 		[[NSWorkspace sharedWorkspace] openURL:url];
+#endif
 #endif
 
 	}
