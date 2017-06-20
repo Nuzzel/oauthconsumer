@@ -28,7 +28,7 @@
 
 @implementation NSString (OAURLEncodingAdditions)
 
-- (NSString *)encodedURLString {
+- (NSString *)oa_encodedURLString {
 	NSString *result = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
                                                                            (CFStringRef)self,
                                                                            NULL,                   // characters to leave unescaped (NULL = all escaped sequences are replaced)
@@ -37,7 +37,7 @@
 	return result;
 }
 
-- (NSString *)encodedURLParameterString {
+- (NSString *)oa_encodedURLParameterString {
     NSString *result = (NSString *)CFBridgingRelease(CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
                                                                            (CFStringRef)self,
                                                                            NULL,
@@ -46,7 +46,7 @@
 	return result;
 }
 
-- (NSString *)decodedURLString {
+- (NSString *)oa_decodedURLString {
 	NSString *result = (NSString*)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(kCFAllocatorDefault,
 																						  (CFStringRef)self,
 																						  CFSTR(""),
@@ -56,7 +56,7 @@
 	
 }
 
--(NSString *)removeQuotes
+-(NSString *)oa_removeQuotes
 {
 	NSUInteger length = [self length];
 	NSString *ret = self;

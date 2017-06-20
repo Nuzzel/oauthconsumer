@@ -119,21 +119,21 @@ signatureProvider:(id<OASignatureProviding>)aProvider
     
     // set OAuth headers
 	NSMutableArray *chunks = [[NSMutableArray alloc] init];
-	[chunks addObject:[NSString stringWithFormat:@"realm=\"%@\"", [realm encodedURLParameterString]]];
-	[chunks addObject:[NSString stringWithFormat:@"oauth_consumer_key=\"%@\"", [consumer.key encodedURLParameterString]]];
+	[chunks addObject:[NSString stringWithFormat:@"realm=\"%@\"", [realm oa_encodedURLParameterString]]];
+	[chunks addObject:[NSString stringWithFormat:@"oauth_consumer_key=\"%@\"", [consumer.key oa_encodedURLParameterString]]];
 
 	NSDictionary *tokenParameters = [token parameters];
 	for (NSString *k in tokenParameters) {
-		[chunks addObject:[NSString stringWithFormat:@"%@=\"%@\"", k, [[tokenParameters objectForKey:k] encodedURLParameterString]]];
+		[chunks addObject:[NSString stringWithFormat:@"%@=\"%@\"", k, [[tokenParameters objectForKey:k] oa_encodedURLParameterString]]];
 	}
     
     // add the custom callback URL for oauth_callback if we one
     if (callbackURL) {
-        [chunks addObject:[NSString stringWithFormat:@"oauth_callback=\"%@\"", [callbackURL encodedURLParameterString]]];
+        [chunks addObject:[NSString stringWithFormat:@"oauth_callback=\"%@\"", [callbackURL oa_encodedURLParameterString]]];
     }
 
-	[chunks addObject:[NSString stringWithFormat:@"oauth_signature_method=\"%@\"", [[signatureProvider name] encodedURLParameterString]]];
-	[chunks addObject:[NSString stringWithFormat:@"oauth_signature=\"%@\"", [signature encodedURLParameterString]]];
+	[chunks addObject:[NSString stringWithFormat:@"oauth_signature_method=\"%@\"", [[signatureProvider name] oa_encodedURLParameterString]]];
+	[chunks addObject:[NSString stringWithFormat:@"oauth_signature=\"%@\"", [signature oa_encodedURLParameterString]]];
 	[chunks addObject:[NSString stringWithFormat:@"oauth_timestamp=\"%@\"", timestamp]];
 	[chunks addObject:[NSString stringWithFormat:@"oauth_nonce=\"%@\"", nonce]];
 	[chunks	addObject:@"oauth_version=\"1.0\""];
@@ -176,7 +176,7 @@ static NSInteger normalize(id obj1, id obj2, void *context)
     // build a sorted array of both request parameters and OAuth header parameters
 	NSDictionary *tokenParameters = [token parameters];
 	// 6 being the number of OAuth params in the Signature Base String
-	NSArray *parameters = [self parameters];
+	NSArray *parameters = [self oa_parameters];
 	NSMutableArray *parameterPairs = [[NSMutableArray alloc] initWithCapacity:(5 + [parameters count] + [tokenParameters count])];
     
 	OARequestParameter *parameter;
@@ -216,8 +216,8 @@ static NSInteger normalize(id obj1, id obj2, void *context)
     // OAuth Spec, Section 9.1.2 "Concatenate Request Elements"
     return [NSString stringWithFormat:@"%@&%@&%@",
             [self HTTPMethod],
-            [[[self URL] URLStringWithoutQuery] encodedURLParameterString],
-            [normalizedRequestParameters encodedURLString]];
+            [[[self URL] oa_URLStringWithoutQuery] oa_encodedURLParameterString],
+            [normalizedRequestParameters oa_encodedURLString]];
 }
 
 

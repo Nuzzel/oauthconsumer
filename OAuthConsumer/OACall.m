@@ -130,7 +130,7 @@
 	}
 
 	if (self.parameters) {
-		[request setParameters:self.parameters];
+		[request setOa_parameters:self.parameters];
 	}
 
 //	if (self.files) {
